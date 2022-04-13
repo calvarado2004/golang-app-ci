@@ -8,7 +8,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
-	_ "github.com/lib/pq"
 )
 
 func indexHandler(c *fiber.Ctx, db *sql.DB) error {
