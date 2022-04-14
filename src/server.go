@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-    _ "github.com/golang-migrate/migrate/v4/database/postgres"
-    _ "github.com/golang-migrate/migrate/v4/source/file"
-    _ "github.com/lib/pq"
+ //_ "github.com/golang-migrate/migrate/v4/database/postgres"
+ //_ "github.com/golang-migrate/migrate/v4/source/file"
+  _ "github.com/lib/pq"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 )
@@ -48,14 +48,14 @@ func postHandler(c *fiber.Ctx, db *sql.DB) error {
 		}
 	}
 
-	return c.Redirect("/")
+	return c.Redirect("/app-golang")
 }
 
 func putHandler(c *fiber.Ctx, db *sql.DB) error {
 	olditem := c.Query("olditem")
 	newitem := c.Query("newitem")
 	db.Exec("UPDATE todos SET item=$1 WHERE item=$2", newitem, olditem)
-	return c.Redirect("/")
+	return c.Redirect("/app-golang")
 }
 
 func deleteHandler(c *fiber.Ctx, db *sql.DB) error {
@@ -81,23 +81,26 @@ func main() {
 	}
 
 	engine := html.New("./views", ".html")
+	
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
 
-	app.Get("/", func(c *fiber.Ctx) error {
+
+	
+	app.Get("/app-golang", func(c *fiber.Ctx) error {
 		return indexHandler(c, db)
 	})
 
-	app.Post("/", func(c *fiber.Ctx) error {
+	app.Post("/app-golang", func(c *fiber.Ctx) error {
 		return postHandler(c, db)
 	})
 
-	app.Put("/update", func(c *fiber.Ctx) error {
+	app.Put("/app-golang/update", func(c *fiber.Ctx) error {
 		return putHandler(c, db)
 	})
 
-	app.Delete("/delete", func(c *fiber.Ctx) error {
+	app.Delete("/app-golang/delete", func(c *fiber.Ctx) error {
 		return deleteHandler(c, db)
 	})
 
@@ -105,6 +108,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	app.Static("/", "./public")
+	app.Static("/app-golang", "./public")
 	log.Fatalln(app.Listen(fmt.Sprintf(":%v", port)))
 }
