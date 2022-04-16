@@ -1,17 +1,15 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"os"
-	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 	_ "github.com/lib/pq"
 )
-
 
 func indexHandler(c *fiber.Ctx, db *sql.DB) error {
 	var res string
@@ -20,28 +18,11 @@ func indexHandler(c *fiber.Ctx, db *sql.DB) error {
 	defer rows.Close()
 	if err != nil {
 
-		// check if schema exists
-		stmt := fmt.Sprintf("SELECT schema_name FROM information_schema.schemata WHERE schema_name='todos';")
-		rs := db.Raw(stmt)
-		if rs.Error != nil {
-			return rs.Error
-		}
+		// check if schema and table exists
+		stmt := fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS todos AUTHORIZATION postgres; CREATE TABLE IF NOT EXISTS todos.todos (item text);")
 
-		// if not create it
-		var rec = make(map[string]interface{})
-		if rs.Find(rec); len(rec) == 0 {
-			stmt := fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS todos AUTHORIZATION postgres;")
-			if rs := db.Exec(stmt); rs.Error != nil {
-				log.Fatalf("An error occured while trying to create Schema")
-				return rs.Error
-			}
-			
-			stmt1 := fmt.Sprintf("CREATE TABLE IF NOT EXISTS todos.todos (item text);")
-			if rs := db.Exec(stmt1); rs.Error != nil {
-				log.Fatalf("An error occured while trying to create Table")
-				return rs.Error			
-			}
-		
+		db.Exec(stmt)
+
 	}
 
 	for rows.Next() {
@@ -87,15 +68,13 @@ func deleteHandler(c *fiber.Ctx, db *sql.DB) error {
 	return c.SendString("deleted")
 }
 
-
 func main() {
-	
+
 	DB_SERVER := os.Getenv("DB_SERVER")
 	DB_PORT := os.Getenv("DB_PORT")
 	DB_USER := os.Getenv("DB_USER")
 	DB_PASSWORD := os.Getenv("DB_PASSWORD")
-	DB_SCHEMA := os.Getenv("DB_SCHEMA")
-	
+
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/postgres?sslmode=disable", DB_USER, DB_PASSWORD, DB_SERVER, DB_PORT)
 
 	// Connect to database
@@ -104,18 +83,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	
 	engine := html.New("./views", ".html")
 
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
 
-
 	app.Get("/app-golang", func(c *fiber.Ctx) error {
 		return indexHandler(c, db)
 	})
-
 
 	app.Post("/app-golang", func(c *fiber.Ctx) error {
 		return postHandler(c, db)
