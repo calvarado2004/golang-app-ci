@@ -14,15 +14,14 @@ import (
 func indexHandler(c *fiber.Ctx, db *sql.DB) error {
 	var res string
 	var todos []string
+	// check if schema and table exists
+	stmt := fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS todos AUTHORIZATION postgres; CREATE TABLE IF NOT EXISTS todos.todos (item text);")
+	db.Exec(stmt)
 	rows, err := db.Query("SELECT * FROM todos")
+	
 	defer rows.Close()
 	if err != nil {
-
-		// check if schema and table exists
-		stmt := fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS todos AUTHORIZATION postgres; CREATE TABLE IF NOT EXISTS todos.todos (item text);")
-
-		db.Exec(stmt)
-
+		return err
 	}
 
 	for rows.Next() {
