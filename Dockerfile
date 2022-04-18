@@ -6,7 +6,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo server.go
 
 FROM busybox:stable
 ENV APP_HOME /app
-RUN adduser 1001 -D -h $APP_HOME && mkdir -p $APP_HOME && chown 1001:1001 $APP_HOME
+COPY curl-amd64 /usr/local/bin/curl
+RUN chmod 755 /usr/local/bin/curl && adduser 1001 -D -h $APP_HOME && mkdir -p $APP_HOME && chown 1001:1001 $APP_HOME
 USER 1001
 WORKDIR $APP_HOME
 COPY ./src/views views/
