@@ -6,39 +6,35 @@ import (
 	"log"
 	"os"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 	_ "github.com/lib/pq"
 )
 
-
-
 func indexHandler(c *fiber.Ctx, db *sql.DB) error {
-   var res string
-   var todos []string
+	var res string
+	var todos []string
 
-   //Idempotent way to create a Schema and a Table
-   _, err := db.Exec("CREATE SCHEMA IF NOT EXISTS todos AUTHORIZATION postgres; CREATE TABLE IF NOT EXISTS todos.todos (item text);")
-   if err != nil {
-      log.Fatalf("An error occured while trying to create schema and table")
-   }
+	//Idempotent way to create a Schema and a Table
+	_, err := db.Exec("CREATE SCHEMA IF NOT EXISTS todos AUTHORIZATION postgres; CREATE TABLE IF NOT EXISTS todos.todos (item text);")
+	if err != nil {
+		log.Fatalf("An error occured while trying to create schema and table")
+	}
 
-   rows, err := db.Query("SELECT * FROM todos.todos")
-   defer rows.Close()
-   if err != nil {
-       log.Fatalln(err)
-       c.JSON("An error occured")
-   }
+	rows, err := db.Query("SELECT * FROM todos.todos")
+	defer rows.Close()
+	if err != nil {
+		log.Fatalln(err)
+		c.JSON("An error occured")
+	}
 
-   for rows.Next() {
-       rows.Scan(&res)
-       todos = append(todos, res)
-   }
-   return c.Render("index", fiber.Map{
-       "Todos": todos,
-   })
+	for rows.Next() {
+		rows.Scan(&res)
+		todos = append(todos, res)
+	}
+	return c.Render("index", fiber.Map{
+		"Todos": todos,
+	})
 }
-
 
 type todo struct {
 	Item string
@@ -89,7 +85,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-
 	engine := html.New("./views", ".html")
 
 	app := fiber.New(fiber.Config{
@@ -116,6 +111,10 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	app.Static("/app-golang", "./public")
+
+	app.Static(
+		"/static",
+		"./static")
+
 	log.Fatalln(app.Listen(fmt.Sprintf(":%v", port)))
 }
