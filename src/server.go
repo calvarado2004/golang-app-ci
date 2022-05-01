@@ -3,11 +3,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	"os"
-
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 	_ "github.com/lib/pq"
+	"log"
+	"os"
 )
 
 func indexHandler(c *fiber.Ctx, db *sql.DB) error {
