@@ -10,6 +10,7 @@ RUN adduser 1001 -D -h $APP_HOME && mkdir -p $APP_HOME && chown 1001:1001 $APP_H
 USER 1001
 WORKDIR $APP_HOME
 COPY ./src/views views/
+COPY ./src/static static/
 COPY --chown=0:0 --from=builder /app/server ./
 EXPOSE 8080
 CMD ["./server"]
