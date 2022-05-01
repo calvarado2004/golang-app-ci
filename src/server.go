@@ -113,7 +113,7 @@ func main() {
 	}
 
 	app.Static(
-		"/static",
+		"/app-golang/static",
 		"./static")
 
 	log.Fatalln(app.Listen(fmt.Sprintf(":%v", port)))
