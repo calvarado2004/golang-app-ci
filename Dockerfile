@@ -1,7 +1,7 @@
 FROM docker.io/bitnami/golang:1.16.15 AS builder
 ADD ./src /app
 WORKDIR /app
-RUN go mod init test/m && go mod tidy && go get github.com/cosmtrek/air && go get github.com/gofiber/template/html
+RUN go mod init github.com/calvarado2004/app-golang && go mod tidy && go get github.com/cosmtrek/air && go get github.com/gofiber/template/html
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo server.go
 
 FROM busybox:stable
