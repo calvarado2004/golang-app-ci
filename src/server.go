@@ -3,11 +3,12 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
 	_ "github.com/lib/pq"
-	"log"
-	"os"
 )
 
 func indexHandler(c *fiber.Ctx, db *sql.DB) error {
@@ -91,6 +92,10 @@ func main() {
 		Views: engine,
 	})
 
+        app.Static(
+                "/app-golang/static/",
+                "./static")
+
 	app.Get("/app-golang", func(c *fiber.Ctx) error {
 		return indexHandler(c, db)
 	})
@@ -111,10 +116,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-
-	app.Static(
-		"/app-golang/static",
-		"./static")
 
 	log.Fatalln(app.Listen(fmt.Sprintf(":%v", port)))
 }
