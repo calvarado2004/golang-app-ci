@@ -93,7 +93,7 @@ func main() {
 	})
 
         app.Static(
-                "/app-golang/static/",
+                "/app-golang",
                 "./static")
 
 	app.Get("/app-golang", func(c *fiber.Ctx) error {
